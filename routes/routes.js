@@ -1,20 +1,32 @@
 const express = require("express");
 const router = express.Router();
-const UserController = require("../controllers/userController");
+const UserController = require("../controllers/userControllers");
+const PostController = require("../controllers/postControllers");
+const CommentsController = require("../controllers/commentsControllers");
 
-// Route: GET /users
-router.get("/", UserController.getAllUsers);
+// User Routes
+router.get("/users", UserController.getAllUsers);
+router.get("/users/:id", UserController.getUserById);
+router.post("/users", UserController.createUser);
+router.put("/users/:id", UserController.updateUser);
+router.delete("/users/:id", UserController.deleteUser);
 
-// Route: GET /users/:id
-router.get("/:id", UserController.getUserById);
+// Post Routes
+router.post("/posts", PostController.createPost);
+router.get("/posts/:id", PostController.getPost);
+router.put("/posts/:id", PostController.updatePost);
+router.delete("/posts/:id", PostController.deletePost);
 
-// Route: POST /users
-router.post("/", UserController.createUser);
-
-// Route: PUT /users/:id
-router.put("/:id", UserController.updateUser);
-
-// Route: DELETE /users/:id
-router.delete("/:id", UserController.deleteUser);
+// Comment Routes
+router.post("/posts/:postId/comments", CommentsController.createComment);
+router.get("/posts/:postId/comments/:commentId", CommentsController.getComment);
+router.put(
+  "/posts/:postId/comments/:commentId",
+  CommentsController.updateComment
+);
+router.delete(
+  "/posts/:postId/comments/:commentId",
+  CommentsController.deleteComment
+);
 
 module.exports = router;
