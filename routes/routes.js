@@ -1,32 +1,30 @@
 const express = require("express");
 const router = express.Router();
-const UserController = require("../controllers/userControllers");
-const PostController = require("../controllers/postControllers");
-const CommentsController = require("../controllers/commentsControllers");
 
-// User Routes
-router.get("/users", UserController.getAllUsers);
-router.get("/users/:id", UserController.getUserById);
-router.post("/users", UserController.createUser);
-router.put("/users/:id", UserController.updateUser);
-router.delete("/users/:id", UserController.deleteUser);
+// Import controllers
+const usersController = require("../controllers/usersControllers");
+const tweetsController = require("../controllers/tweetsController");
+const commentsController = require("../controllers/commentsController");
 
-// Post Routes
-router.post("/posts", PostController.createPost);
-router.get("/posts/:id", PostController.getPost);
-router.put("/posts/:id", PostController.updatePost);
-router.delete("/posts/:id", PostController.deletePost);
+// Users Routes
+router.get("/users", usersController.getUsers);
+router.get("/users/:id", usersController.getUserById);
+router.post("/users", usersController.createUser);
+router.put("/users/:id", usersController.updateUser);
+router.delete("/users/:id", usersController.deleteUser);
 
-// Comment Routes
-router.post("/posts/:postId/comments", CommentsController.createComment);
-router.get("/posts/:postId/comments/:commentId", CommentsController.getComment);
-router.put(
-  "/posts/:postId/comments/:commentId",
-  CommentsController.updateComment
-);
-router.delete(
-  "/posts/:postId/comments/:commentId",
-  CommentsController.deleteComment
-);
+// Tweets Routes
+router.get("/tweets", tweetsController.getTweets);
+router.get("/tweets/:id", tweetsController.getTweetById);
+router.post("/tweets", tweetsController.createTweet);
+router.put("/tweets/:id", tweetsController.updateTweet);
+router.delete("/tweets/:id", tweetsController.deleteTweet);
+
+// Comments Routes
+router.get("/comments", commentsController.getComments);
+router.get("/comments/:id", commentsController.getCommentById);
+router.post("/comments", commentsController.createComment);
+router.put("/comments/:id", commentsController.updateComment);
+router.delete("/comments/:id", commentsController.deleteComment);
 
 module.exports = router;
