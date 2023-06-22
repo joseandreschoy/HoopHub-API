@@ -1,75 +1,60 @@
-// controllers/UserControllers.js
-
-const createUser = async (req, res, db) => {
-  try {
-    const { username, email, password } = req.body;
-    const newUser = { username, email, password };
-
-    const userIds = await db("users").insert(newUser);
-    const userId = userIds[0];
-
-    res.status(201).json({ id: userId, ...newUser });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to create user" });
-  }
+// Get all users
+exports.getUsers = (req, res) => {
+  res.json(users);
 };
 
-const getUser = async (req, res, db) => {
-  try {
-    const userId = req.params.id;
+// Get a single user by ID
+exports.getUserById = (req, res) => {
+  const { id } = req.params;
+  const user = users.find((user) => user.id === parseInt(id));
 
-    const user = await db("users").where("id", userId).first();
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to retrieve user" });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
   }
+
+  res.json(user);
 };
 
-const updateUser = async (req, res, db) => {
-  try {
-    const userId = req.params.id;
-    const { username, email, password } = req.body;
-    const updatedUser = { username, email, password };
+// Create a new user
+exports.createUser = (req, res) => {
+  const { username, email } = req.body;
 
-    const count = await db("users").where("id", userId).update(updatedUser);
+  // Validate input data, perform necessary checks
 
-    if (count === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+  const newUser = { id: users.length + 1, username, email };
+  users.push(newUser);
 
-    res.json({ id: userId, ...updatedUser });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to update user" });
-  }
+  res.status(201).json(newUser);
 };
 
-const deleteUser = async (req, res, db) => {
-  try {
-    const userId = req.params.id;
+// Update an existing user
+exports.updateUser = (req, res) => {
+  const { id } = req.params;
+  const { username, email } = req.body;
+  const user = users.find((user) => user.id === parseInt(id));
 
-    const count = await db("users").where("id", userId).del();
-
-    if (count === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.sendStatus(204);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to delete user" });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
   }
+
+  // Perform update operation on the user
+
+  user.username = username || user.username;
+  user.email = email || user.email;
+
+  res.json(user);
 };
 
-module.exports = {
-  createUser,
-  getUser,
-  updateUser,
-  deleteUser,
+// Delete a user
+exports.deleteUser = (req, res) => {
+  const { id } = req.params;
+  const index = users.findIndex((user) => user.id === parseInt(id));
+
+  if (index === -1) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  users.splice(index, 1);
+
+  res.sendStatus(204);
 };
