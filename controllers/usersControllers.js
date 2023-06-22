@@ -1,14 +1,13 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const User = require("../models/User");
 
-// ...
+let users = [];
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = users.find((user) => user.email === email);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -50,11 +49,11 @@ exports.getUserById = (req, res) => {
 
 // Create a new user
 exports.createUser = (req, res) => {
-  const { username, email } = req.body;
+  const { username, email, password } = req.body;
 
   // Validate input data, perform necessary checks
 
-  const newUser = { id: users.length + 1, username, email };
+  const newUser = { id: users.length + 1, username, email, password };
   users.push(newUser);
 
   res.status(201).json(newUser);

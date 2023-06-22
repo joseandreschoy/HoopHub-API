@@ -5,6 +5,7 @@ const router = express.Router();
 const usersController = require("../controllers/usersControllers");
 const tweetsController = require("../controllers/tweetsController");
 const commentsController = require("../controllers/commentsController");
+const authController = require("../controllers/authController");
 
 // Users Routes
 router.get("/users", usersController.getUsers);
@@ -26,5 +27,8 @@ router.get("/comments/:id", commentsController.getCommentById);
 router.post("/comments", commentsController.createComment);
 router.put("/comments/:id", commentsController.updateComment);
 router.delete("/comments/:id", commentsController.deleteComment);
+
+// Authentication Routes
+router.post("/login", authController.login);
 
 module.exports = router;
