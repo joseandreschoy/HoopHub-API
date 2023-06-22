@@ -1,3 +1,5 @@
+let tweets = []; // Define the tweets array
+
 // Get all tweets
 exports.getTweets = (req, res) => {
   res.json(tweets);
