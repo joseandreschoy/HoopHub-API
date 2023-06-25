@@ -1,59 +1,87 @@
+const knex = require("knex")(require("../knexfile"));
+
 // Get all comments
-exports.getComments = (req, res) => {
-  res.json(comments);
+exports.getComments = async (req, res) => {
+  try {
+    const comments = await knex("comments");
+    res.json(comments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Get a single comment by ID
-exports.getCommentById = (req, res) => {
-  const { id } = req.params;
-  const comment = comments.find((comment) => comment.id === parseInt(id));
+exports.getCommentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const comment = await knex("comments").where({ id }).first();
 
-  if (!comment) {
-    return res.status(404).json({ message: "Comment not found" });
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    res.json(comment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  res.json(comment);
 };
 
 // Create a new comment
-exports.createComment = (req, res) => {
-  const { userId, tweetId, content } = req.body;
+exports.createComment = async (req, res) => {
+  try {
+    const { userId, tweetId, content } = req.body;
 
-  // Validate input data, perform necessary checks
+    // Validate input data, perform necessary checks
 
-  const newComment = { id: comments.length + 1, userId, tweetId, content };
-  comments.push(newComment);
+    const newComment = { userId, tweetId, content };
+    const [commentId] = await knex("comments").insert(newComment);
 
-  res.status(201).json(newComment);
+    newComment.id = commentId;
+
+    res.status(201).json(newComment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Update an existing comment
-exports.updateComment = (req, res) => {
-  const { id } = req.params;
-  const { content } = req.body;
-  const comment = comments.find((comment) => comment.id === parseInt(id));
+exports.updateComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
 
-  if (!comment) {
-    return res.status(404).json({ message: "Comment not found" });
+    const updatedComment = await knex("comments")
+      .where({ id })
+      .update({ content }, ["id", "userId", "tweetId", "content"]);
+
+    if (!updatedComment.length) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    res.json(updatedComment[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  // Perform update operation on the comment
-
-  comment.content = content || comment.content;
-
-  res.json(comment);
 };
 
 // Delete a comment
-exports.deleteComment = (req, res) => {
-  const { id } = req.params;
-  const index = comments.findIndex((comment) => comment.id === parseInt(id));
+exports.deleteComment = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  if (index === -1) {
-    return res.status(404).json({ message: "Comment not found" });
+    const deletedComment = await knex("comments").where({ id }).del();
+
+    if (!deletedComment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  comments.splice(index, 1);
-
-  res.sendStatus(204);
 };

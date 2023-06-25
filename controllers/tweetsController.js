@@ -1,61 +1,87 @@
-let tweets = []; // Define the tweets array
+const knex = require("knex")(require("../knexfile"));
 
 // Get all tweets
-exports.getTweets = (req, res) => {
-  res.json(tweets);
+exports.getTweets = async (req, res) => {
+  try {
+    const tweets = await knex("tweets");
+    res.json(tweets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Get a single tweet by ID
-exports.getTweetById = (req, res) => {
-  const { id } = req.params;
-  const tweet = tweets.find((tweet) => tweet.id === parseInt(id));
+exports.getTweetById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tweet = await knex("tweets").where({ id }).first();
 
-  if (!tweet) {
-    return res.status(404).json({ message: "Tweet not found" });
+    if (!tweet) {
+      return res.status(404).json({ message: "Tweet not found" });
+    }
+
+    res.json(tweet);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  res.json(tweet);
 };
 
 // Create a new tweet
-exports.createTweet = (req, res) => {
-  const { userId, content } = req.body;
+exports.createTweet = async (req, res) => {
+  try {
+    const { userId, content } = req.body;
 
-  // Validate input data, perform necessary checks
+    // Validate input data, perform necessary checks
 
-  const newTweet = { id: tweets.length + 1, userId, content };
-  tweets.push(newTweet);
+    const newTweet = { userId, content };
+    const [tweetId] = await knex("tweets").insert(newTweet);
 
-  res.status(201).json(newTweet);
+    newTweet.id = tweetId;
+
+    res.status(201).json(newTweet);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Update an existing tweet
-exports.updateTweet = (req, res) => {
-  const { id } = req.params;
-  const { content } = req.body;
-  const tweet = tweets.find((tweet) => tweet.id === parseInt(id));
+exports.updateTweet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
 
-  if (!tweet) {
-    return res.status(404).json({ message: "Tweet not found" });
+    const updatedTweet = await knex("tweets")
+      .where({ id })
+      .update({ content }, ["id", "userId", "content"]);
+
+    if (!updatedTweet.length) {
+      return res.status(404).json({ message: "Tweet not found" });
+    }
+
+    res.json(updatedTweet[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  // Perform update operation on the tweet
-
-  tweet.content = content || tweet.content;
-
-  res.json(tweet);
 };
 
 // Delete a tweet
-exports.deleteTweet = (req, res) => {
-  const { id } = req.params;
-  const index = tweets.findIndex((tweet) => tweet.id === parseInt(id));
+exports.deleteTweet = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  if (index === -1) {
-    return res.status(404).json({ message: "Tweet not found" });
+    const deletedTweet = await knex("tweets").where({ id }).del();
+
+    if (!deletedTweet) {
+      return res.status(404).json({ message: "Tweet not found" });
+    }
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  tweets.splice(index, 1);
-
-  res.sendStatus(204);
 };

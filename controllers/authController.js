@@ -1,13 +1,12 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
-let users = [];
+const knex = require("knex")(require("../knexfile"));
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = users.find((user) => user.email === email);
+    const user = await knex("users").where({ email }).first();
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
