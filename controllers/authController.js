@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 const knex = require("knex")(require("../knexfile"));
 
 exports.login = async (req, res) => {
