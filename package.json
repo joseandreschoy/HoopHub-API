@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
-    "start": "node --watch server.js"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
