@@ -31,11 +31,11 @@ exports.getTweetById = async (req, res) => {
 // Create a new tweet
 exports.createTweet = async (req, res) => {
   try {
-    const { userId, content } = req.body;
+    const { userId, username, content } = req.body;
 
     // Validate input data, perform necessary checks
 
-    const newTweet = { userId, content };
+    const newTweet = { user_id: userId, username, content };
     const [tweetId] = await knex("tweets").insert(newTweet);
 
     newTweet.id = tweetId;
