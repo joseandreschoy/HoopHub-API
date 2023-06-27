@@ -15,7 +15,7 @@ exports.getComments = async (req, res) => {
 exports.getCommentsByTweetId = async (req, res) => {
   try {
     const { tweetId } = req.params;
-    const comment = await knex("comments").where({ tweetId }).first();
+    const comment = await knex("comments").where({ tweet_id: tweetId });
 
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
