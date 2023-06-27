@@ -12,10 +12,10 @@ exports.getComments = async (req, res) => {
 };
 
 // Get a single comment by ID
-exports.getCommentById = async (req, res) => {
+exports.getCommentsByTweetId = async (req, res) => {
   try {
-    const { id } = req.params;
-    const comment = await knex("comments").where({ id }).first();
+    const { tweetId } = req.params;
+    const comment = await knex("comments").where({ tweetId }).first();
 
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });

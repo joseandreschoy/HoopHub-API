@@ -22,8 +22,11 @@ router.put("/tweets/:id", tweetsController.updateTweet);
 router.delete("/tweets/:id", tweetsController.deleteTweet);
 
 // Comments Routes
-router.get("/comments", commentsController.getComments);
-router.get("/comments/:id", commentsController.getCommentById);
+router.get("/comments/:id", commentsController.getComments);
+router.get(
+  "/tweets/:tweetId/comments/",
+  commentsController.getCommentsByTweetId
+);
 router.post("/comments", commentsController.createComment);
 router.put("/comments/:id", commentsController.updateComment);
 router.delete("/comments/:id", commentsController.deleteComment);
